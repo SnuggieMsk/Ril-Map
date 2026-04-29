@@ -69,6 +69,17 @@
     $$(".tab-panel", wrap).forEach(p => p.classList.toggle("active", p.dataset.tab === id));
   });
 
+  /* ===== Reveal-trigger delegation ===== */
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".reveal-trigger");
+    if (!btn) return;
+    const id = btn.dataset.reveal;
+    const target = document.getElementById(id);
+    if (!target) return;
+    target.classList.toggle("open");
+    btn.textContent = target.classList.contains("open") ? "Show less" : btn.dataset.label || "Show more";
+  });
+
   /* ===== Render: ROUTES ===== */
   function renderRoutes() {
     const root = $("#routes-body");
@@ -84,12 +95,21 @@
       </div>`;
     });
     html += `</div>`;
-    html += `<h3 style="margin-top:36px">Side-by-side comparison — every dimension that matters</h3>`;
+    html += `<h3 style="margin-top:36px">Side-by-side — the dimensions that matter most</h3>`;
+    const N_VISIBLE = 8;
+    const visible = routes.comparison.slice(0, N_VISIBLE);
+    const hidden  = routes.comparison.slice(N_VISIBLE);
     html += `<div style="overflow-x:auto"><table class="compare"><thead><tr><th>Dimension</th><th>LRS Direct</th><th>GIFT City IFSC</th></tr></thead><tbody>`;
-    routes.comparison.forEach(r => {
-      html += `<tr><td>${r.row}</td><td>${r.lrs}</td><td>${r.gift}</td></tr>`;
-    });
-    html += `</tbody></table></div>`;
+    visible.forEach(r => html += `<tr><td>${r.row}</td><td>${r.lrs}</td><td>${r.gift}</td></tr>`);
+    if (hidden.length) {
+      html += `</tbody></table></div>
+        <div class="reveal-content" id="routesReveal"><div style="overflow-x:auto;margin-top:8px"><table class="compare"><tbody>`;
+      hidden.forEach(r => html += `<tr><td style="width:30%">${r.row}</td><td>${r.lrs}</td><td>${r.gift}</td></tr>`);
+      html += `</tbody></table></div></div>
+        <button class="reveal-trigger" data-reveal="routesReveal">Show all ${routes.comparison.length} dimensions</button>`;
+    } else {
+      html += `</tbody></table></div>`;
+    }
     root.innerHTML = html;
   }
 
@@ -380,14 +400,14 @@
 
     // Initialise Leaflet
     const map = L.map("worldMap", { worldCopyJump: true, scrollWheelZoom: false }).setView([22, 25], 2);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 18,
       subdomains: "abcd"
     }).addTo(map);
 
     // Pins
-    const colorFor = t => t === "primary" ? "#ff6b78" : t === "core" ? "#ffb547" : "#6aa6ff";
+    const colorFor = t => t === "primary" ? "#862633" : t === "core" ? "#b8842c" : "#1e2c52";
     DOSSIER.countries.forEach(c => {
       const m = L.circleMarker([c.lat, c.lng], {
         radius: c.tier === "primary" ? 11 : c.tier === "core" ? 8 : 6,
@@ -829,12 +849,61 @@
   function renderHowTo() {
     const root = $("#howto-body");
     if (!root) return;
-    let html = `<div class="grid grid-3">`;
-    DOSSIER.howTo.forEach((h, i) => {
-      html += `<div class="card"><span class="kicker">Path ${String.fromCharCode(65 + i)}</span><h3 style="margin-top:6px">${h.h}</h3><p>${h.b}</p></div>`;
+    let html = `
+      <div class="journey-banner" id="journeyBanner">
+        <div class="j-text">Reading path: <b id="journeyName"></b> · only the relevant sections are highlighted.</div>
+        <button id="journeyClear">Show everything</button>
+      </div>
+      <div class="grid grid-3" id="pathsGrid">
+    `;
+    DOSSIER.howTo.forEach((h) => {
+      html += `<div class="path-card" data-path="${h.id}">
+        <div class="path-icon">${h.icon}</div>
+        <h3>${h.h}</h3>
+        <p>${h.b}</p>
+        <div class="path-meta">${h.time} · Begin path</div>
+      </div>`;
     });
     html += `</div>`;
     root.innerHTML = html;
+
+    // Wire path clicks
+    const allSections = ["routes","lrs","gift","icici","us","world","tax","risks","calc","faq","glossary","sources"];
+    const banner = $("#journeyBanner");
+    const journeyName = $("#journeyName");
+
+    function clearJourney() {
+      document.body.classList.remove("journey-active");
+      banner.classList.remove("active");
+      $$(".path-card").forEach(c => c.classList.remove("active"));
+      allSections.forEach(s => $("#" + s)?.classList.remove("section-focus"));
+    }
+
+    $$(".path-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const id = card.dataset.path;
+        const p = DOSSIER.howTo.find(x => x.id === id);
+        if (!p) return;
+
+        // Toggle off if same one clicked
+        if (card.classList.contains("active")) { clearJourney(); return; }
+
+        clearJourney();
+        card.classList.add("active");
+        document.body.classList.add("journey-active");
+        journeyName.textContent = p.h;
+        banner.classList.add("active");
+        p.focus.forEach(s => $("#" + s)?.classList.add("section-focus"));
+
+        // Smooth-scroll to first focused section
+        const first = $("#" + p.focus[0]);
+        if (first) {
+          setTimeout(() => first.scrollIntoView({behavior: "smooth", block: "start"}), 250);
+        }
+      });
+    });
+
+    $("#journeyClear")?.addEventListener("click", clearJourney);
   }
 
   function renderSources() {
@@ -847,6 +916,108 @@
     html += `</div>`;
     html += `<div class="callout" style="margin-top:24px;font-size:13px"><strong>Last updated:</strong> Apr 2026 · Reflects FY 2025–26 regulatory framework. Numbers, treaties and circulars are amended frequently — verify against original sources before acting.</div>`;
     root.innerHTML = html;
+  }
+
+  /* ===== Jargon hover-tooltip system =====
+     After all renders, scan all paragraphs / list items / table cells for
+     glossary terms and wrap them in a hover-tooltip span. Skip headings,
+     code, calculator inputs, glossary cards, FAQ accordion (already
+     contextual), and skip <a> / inputs / things already wrapped.
+  */
+  function applyJargonTooltips() {
+    if (!DOSSIER.glossary) return;
+    // Build a sorted-by-length list to match longest first
+    const terms = DOSSIER.glossary
+      .slice()
+      .filter(g => g.t.length >= 2 && g.t.length <= 30)
+      .sort((a, b) => b.t.length - a.t.length);
+
+    // Build regex: word boundaries, escape special chars
+    const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const termMap = new Map();
+    terms.forEach(t => termMap.set(t.t.toLowerCase(), t));
+    const pattern = new RegExp("\\b(" + terms.map(t => escapeRe(t.t)).join("|") + ")\\b", "i");
+
+    // Limit tooltips per page to avoid overwhelming UX
+    const seen = new Set();
+    const MAX_PER_TERM = 1; // first occurrence only per term
+    const counts = new Map();
+
+    // Eligible containers (selector list)
+    const containerSel = `
+      #routes-body p, #routes-body td:not(:first-child), #routes-body li,
+      #lrs-body p, #lrs-body td, #lrs-body li,
+      #gift-body p, #gift-body td, #gift-body li,
+      #icici-body p, #icici-body dd, #icici-body td, #icici-body li,
+      #us-body p, #us-body td, #us-body li,
+      #tax-body p, #tax-body td, #tax-body li,
+      #risks-body p,
+      #howto-body p
+    `;
+    const containers = document.querySelectorAll(containerSel);
+
+    containers.forEach(node => walkTextNodes(node));
+
+    function walkTextNodes(node) {
+      if (!node) return;
+      // Skip if inside excluded elements
+      const skipTag = (n) => {
+        if (!n) return true;
+        const tag = (n.tagName || "").toLowerCase();
+        if (["a","code","button","input","select","textarea","script","style"].includes(tag)) return true;
+        if (n.classList && (n.classList.contains("jargon") || n.classList.contains("kicker") || n.classList.contains("pill") || n.classList.contains("path-meta") || n.classList.contains("jargon-tip"))) return true;
+        return false;
+      };
+
+      const children = Array.from(node.childNodes);
+      children.forEach(child => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          replaceInTextNode(child);
+        } else if (child.nodeType === Node.ELEMENT_NODE && !skipTag(child)) {
+          walkTextNodes(child);
+        }
+      });
+    }
+
+    function replaceInTextNode(textNode) {
+      const text = textNode.nodeValue;
+      if (!text || text.length < 3) return;
+      const m = text.match(pattern);
+      if (!m) return;
+      const term = m[1];
+      const key = term.toLowerCase();
+      const def = termMap.get(key);
+      if (!def) return;
+
+      const c = counts.get(key) || 0;
+      if (c >= MAX_PER_TERM) return;
+      counts.set(key, c + 1);
+
+      const idx = m.index;
+      const before = text.slice(0, idx);
+      const after = text.slice(idx + term.length);
+      const span = document.createElement("span");
+      span.className = "jargon";
+      span.dataset.term = key;
+      span.textContent = term;
+      const tip = document.createElement("span");
+      tip.className = "jargon-tip";
+      tip.innerHTML = `<strong>${def.t}</strong>${def.d}`;
+      span.appendChild(tip);
+
+      const frag = document.createDocumentFragment();
+      if (before) frag.appendChild(document.createTextNode(before));
+      frag.appendChild(span);
+      if (after) {
+        const afterNode = document.createTextNode(after);
+        frag.appendChild(afterNode);
+        textNode.parentNode.replaceChild(frag, textNode);
+        // continue scanning the "after" text for more matches
+        replaceInTextNode(afterNode);
+      } else {
+        textNode.parentNode.replaceChild(frag, textNode);
+      }
+    }
   }
 
   /* ===== Master init ===== */
@@ -865,6 +1036,9 @@
     renderFAQ();
     renderGlossary();
     renderSources();
+
+    // Apply jargon tooltips after a tick so all DOM is settled
+    requestAnimationFrame(() => requestAnimationFrame(applyJargonTooltips));
   }
 
   if (document.readyState === "loading") {

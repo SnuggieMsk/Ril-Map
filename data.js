@@ -951,12 +951,12 @@ DOSSIER.glossary = [
 
 /* ---------- 12. SOURCES & "HOW TO USE" ---------- */
 DOSSIER.howTo = [
-  {h: "Quick reader (5 min)", b: "Read sections 01 (Routes) + 04 (ICICI Direct) + the FAQ filter for your scenario. You'll have a working understanding."},
-  {h: "Beginner (30 min)", b: "Add sections 02 (LRS) + 05 (US Market) + try Calculator #1 (LRS) and #3 (Capital Gains)."},
-  {h: "Going to invest (full 2-hour read)", b: "Read everything. Then use the 10-step checklist (Section 04) and run all five calculators with your numbers."},
-  {h: "Already invested — annual review", b: "Section 07 (Tax) for ITR season. Schedule FA + Form 67 are non-negotiable. Re-check your TCS in Form 26AS."},
-  {h: "NRI / returning Indian", b: "FAQ → 'NRI / Special' filter. Plus Section 03 (GIFT City) which is often optimal for US/Canada NRIs."},
-  {h: "HNI / portfolio > $250K", b: "Sections 05 (US estate tax mitigations) + 08 (Risks) + Calc #5 (Estate). Engage CA early."}
+  {id:"quick", icon:"5m", h: "The 5-minute primer", b: "You want the gist before a meeting. Routes overview + ICICI Direct + FAQ filter for your scenario.", time:"5 min", focus:["routes","icici","faq"]},
+  {id:"beginner", icon:"B", h: "The first-time investor", b: "Never invested abroad. Walk me through the basics, the limits, and a sample US trade.", time:"30 min", focus:["routes","lrs","us","calc"]},
+  {id:"full", icon:"All", h: "The complete read", b: "I want every detail before I act. Two routes, every tax, every risk, every form.", time:"2 hours", focus:["routes","lrs","gift","icici","us","world","tax","risks","calc","faq","glossary"]},
+  {id:"annual", icon:"ITR", h: "Annual ITR review", b: "Already invested. Show me Schedule FA, Form 67, the 12.5% LTCG regime, and the calendar.", time:"15 min", focus:["tax","calc","faq"]},
+  {id:"nri", icon:"NRI", h: "NRI / Returning Indian", b: "I am abroad or coming back. GIFT City is often the cleanest route for me.", time:"20 min", focus:["gift","tax","faq"]},
+  {id:"hni", icon:"HNI", h: "HNI / Portfolio > USD 250K", b: "Concentration in US stocks. Show me the estate-tax landmine and how to defuse it.", time:"25 min", focus:["us","risks","calc","gift"]}
 ];
 
 DOSSIER.sources = [
