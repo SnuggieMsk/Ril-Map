@@ -491,7 +491,7 @@ disc.border = Border(left=Side(style="thick", color=GOLD), top=thin_line, bottom
 # ===== Workbook protection (allow editing only inputs) =====
 # Protect sheet — locked cells can't be edited; unlocked input cells can.
 ws.protection.sheet = True
-ws.protection.password = ""  # no password — easy to unprotect if needed
+ws.protection.password = "ICICI2026"
 ws.protection.formatCells = False
 ws.protection.formatColumns = False
 ws.protection.formatRows = False
