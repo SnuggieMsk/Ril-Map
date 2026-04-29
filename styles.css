@@ -407,6 +407,56 @@ code {
 .leaflet-control-attribution { background: rgba(255,255,255,.85) !important; color: var(--text-mute) !important; font-size: 10px !important; }
 .leaflet-control-attribution a { color: var(--navy) !important; border: none !important; }
 
+/* Pin hover/active */
+.country-pin {
+  cursor: pointer;
+  transition: stroke-width .15s, transform .15s;
+}
+.country-pin:hover {
+  stroke-width: 4;
+  filter: drop-shadow(0 2px 6px rgba(14,17,22,.3));
+}
+
+/* Permanent country labels under pins */
+.country-label.leaflet-tooltip {
+  background: rgba(255,255,255,0.92);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(14,17,22,.10);
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.country-label.leaflet-tooltip::before { display: none; }
+.country-label-tip { display: none; }
+
+/* Map legend */
+.map-legend {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  margin-top: 16px; align-items: center;
+  background: var(--bg-3); padding: 12px 18px;
+  border-radius: var(--radius-sm); border: 1px solid var(--line);
+}
+.map-legend-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-dim); font-weight: 500;
+}
+.map-legend-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line);
+}
+.map-hint { font-size: 12px; color: var(--text-mute); margin-left: auto; font-style: italic; }
+@media (max-width: 768px) {
+  #worldMap { height: 420px; }
+  .country-label.leaflet-tooltip { font-size: 9px; padding: 1px 5px; }
+  .map-hint { display: none; }
+}
+
 /* ===== Calculators ===== */
 .calc-card {
   background: var(--surface); border: 1px solid var(--line);
@@ -532,7 +582,11 @@ code {
   border-top-color: var(--ink);
 }
 .jargon-tip strong { color: var(--gold); display: block; margin-bottom: 4px; font-family: var(--serif); font-weight: 500; font-size: 13px; }
-.jargon:hover .jargon-tip { opacity: 1; pointer-events: auto; }
+.jargon:hover .jargon-tip,
+.jargon.tap-open .jargon-tip { opacity: 1; pointer-events: auto; }
+@media (hover: none) {
+  .jargon { background: rgba(184,132,44,.08); padding: 0 3px; border-radius: 3px; }
+}
 
 /* ===== Reader-path cards (clickable persona) ===== */
 .path-card {
@@ -596,10 +650,48 @@ code {
 }
 .journey-banner button:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
 
-/* When a journey is active, dim non-relevant sections (visual focus, not hidden) */
-body.journey-active .section:not(.section-focus):not(#hero):not(#howto):not(#disclaimer):not(.disclaimer-section) { opacity: 0.45; transition: opacity .3s; }
-body.journey-active .section.section-focus { opacity: 1; }
-body.journey-active .section:not(.section-focus):hover { opacity: 1; }
+/* When a journey is active, hide non-relevant sections entirely.
+   Hovering a dimmed section restores it (preview), hover off re-dims. */
+body.journey-active .section:not(.section-focus):not(#howto):not(.disclaimer-section) {
+  max-height: 110px;
+  overflow: hidden;
+  opacity: 0.35;
+  filter: grayscale(0.5);
+  transition: max-height .35s ease, opacity .35s ease, filter .35s ease;
+  position: relative;
+}
+body.journey-active .section:not(.section-focus):not(#howto):not(.disclaimer-section)::after {
+  content: "Tap to expand →";
+  position: absolute;
+  bottom: 12px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gold-2);
+  background: var(--bg-2); padding: 6px 14px; border-radius: 100px;
+  border: 1px solid var(--line); cursor: pointer;
+  pointer-events: none;
+}
+body.journey-active .section:not(.section-focus):not(#howto):hover,
+body.journey-active .section:not(.section-focus):not(#howto):focus-within {
+  max-height: none;
+  opacity: 1;
+  filter: none;
+  cursor: pointer;
+}
+body.journey-active .section:not(.section-focus):not(#howto):hover::after,
+body.journey-active .section:not(.section-focus):not(#howto):focus-within::after {
+  display: none;
+}
+body.journey-active .section.section-focus {
+  position: relative;
+}
+body.journey-active .section.section-focus::before {
+  content: "In your reading path";
+  position: absolute; top: 24px; right: 28px;
+  background: var(--ink); color: var(--gold);
+  padding: 4px 12px; border-radius: 100px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; font-family: var(--sans);
+}
 
 /* ===== "Read more" reveal ===== */
 .reveal-trigger {

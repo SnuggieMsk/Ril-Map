@@ -76,8 +76,24 @@
     const id = btn.dataset.reveal;
     const target = document.getElementById(id);
     if (!target) return;
+    // Capture original label once
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
     target.classList.toggle("open");
-    btn.textContent = target.classList.contains("open") ? "Show less" : btn.dataset.label || "Show more";
+    btn.textContent = target.classList.contains("open") ? "Show less" : btn.dataset.label;
+  });
+
+  /* ===== Jargon tap-to-toggle (touch devices) ===== */
+  document.addEventListener("click", (e) => {
+    const j = e.target.closest(".jargon");
+    if (j) {
+      // Close any other open jargon tips
+      document.querySelectorAll(".jargon.tap-open").forEach(x => { if (x !== j) x.classList.remove("tap-open"); });
+      j.classList.toggle("tap-open");
+      e.stopPropagation();
+      return;
+    }
+    // Click outside any jargon -> close all
+    document.querySelectorAll(".jargon.tap-open").forEach(x => x.classList.remove("tap-open"));
   });
 
   /* ===== Render: ROUTES ===== */
@@ -389,45 +405,64 @@
     const root = $("#world-body");
     root.innerHTML = `
       <div id="worldMap" aria-label="World map of investment-relevant jurisdictions"></div>
-      <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--text-mute)">
-        <span class="pill bad">● Primary focus</span>
-        <span class="pill warn">● Core market</span>
-        <span class="pill info">● Limited access</span>
-        <span style="color:var(--text-mute)">Click any pin → full regulatory profile.</span>
+      <div class="map-legend">
+        <span class="map-legend-item"><span class="map-legend-dot" style="background:#862633"></span> Primary focus</span>
+        <span class="map-legend-item"><span class="map-legend-dot" style="background:#b8842c"></span> Core market</span>
+        <span class="map-legend-item"><span class="map-legend-dot" style="background:#1e2c52"></span> Limited access</span>
+        <span class="map-hint">Tap any pin or label → full regulatory profile</span>
       </div>
-      <div id="countryTable" style="margin-top:24px"></div>
+      <div id="countryTable" style="margin-top:28px"></div>
     `;
 
     // Initialise Leaflet
-    const map = L.map("worldMap", { worldCopyJump: true, scrollWheelZoom: false }).setView([22, 25], 2);
+    const map = L.map("worldMap", {
+      worldCopyJump: true,
+      scrollWheelZoom: false,
+      tap: true,
+      tapTolerance: 30 // generous touch radius
+    }).setView([22, 25], 2);
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 18,
       subdomains: "abcd"
     }).addTo(map);
 
-    // Pins
+    // Pins — larger, with permanent country-name labels
     const colorFor = t => t === "primary" ? "#862633" : t === "core" ? "#b8842c" : "#1e2c52";
     DOSSIER.countries.forEach(c => {
+      const radius = c.tier === "primary" ? 14 : c.tier === "core" ? 11 : 9;
       const m = L.circleMarker([c.lat, c.lng], {
-        radius: c.tier === "primary" ? 11 : c.tier === "core" ? 8 : 6,
-        color: colorFor(c.tier),
+        radius,
+        color: "#ffffff",
         weight: 2,
         fillColor: colorFor(c.tier),
-        fillOpacity: 0.7
+        fillOpacity: 0.95,
+        className: "country-pin"
       }).addTo(map);
+
+      // Permanent label below pin
+      m.bindTooltip(c.name.replace(/ \(.*\)/, ''), {
+        permanent: true,
+        direction: "bottom",
+        offset: [0, 4],
+        className: "country-label"
+      });
+
       const popup = `
         <h4>${c.name}</h4>
-        <div style="font-size:12px"><strong>Exchanges:</strong> ${c.exchanges}</div>
-        <div style="font-size:12px"><strong>Dividend WHT:</strong> ${c.dividendWHT}</div>
-        <div style="font-size:12px"><strong>Local CG (NRA):</strong> ${c.capGainsLocal}</div>
-        <div style="font-size:12px"><strong>Estate Tax:</strong> ${c.estateTax}</div>
-        <div style="font-size:12px"><strong>DTAA w/ India:</strong> ${c.dtaa}</div>
-        <div style="font-size:12px"><strong>LRS access:</strong> ${c.accessLRS}</div>
-        <div style="font-size:12px"><strong>GIFT access:</strong> ${c.accessGIFT}</div>
-        <div style="font-size:12px;margin-top:6px;color:var(--accent)">${c.notes}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>Exchanges:</strong> ${c.exchanges}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>Dividend WHT:</strong> ${c.dividendWHT}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>Local CG (NRA):</strong> ${c.capGainsLocal}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>Estate Tax:</strong> ${c.estateTax}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>DTAA w/ India:</strong> ${c.dtaa}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>LRS access:</strong> ${c.accessLRS}</div>
+        <div style="font-size:12px;line-height:1.6"><strong>GIFT access:</strong> ${c.accessGIFT}</div>
+        <div style="font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--gold-2);font-style:italic">${c.notes}</div>
       `;
-      m.bindPopup(popup, { maxWidth: 360 });
+      m.bindPopup(popup, { maxWidth: 360, autoPan: true });
+
+      // Explicit click handler (Leaflet should auto-bind, but defensive)
+      m.on("click", () => m.openPopup());
     });
 
     // Country table
@@ -904,6 +939,19 @@
     });
 
     $("#journeyClear")?.addEventListener("click", clearJourney);
+
+    // Tap a dimmed section in journey mode → add it to focus
+    document.addEventListener("click", (e) => {
+      if (!document.body.classList.contains("journey-active")) return;
+      const section = e.target.closest(".section");
+      if (!section) return;
+      // Skip howto, hero, disclaimer
+      if (section.id === "howto" || section.id === "hero" || section.id === "disclaimer") return;
+      if (section.classList.contains("section-focus")) return;
+      // Don't capture clicks meant for buttons / links
+      if (e.target.closest("a, button, input, select, .leaflet-container, .acc-head, .tab-btn, .gloss, .path-card, .reveal-trigger, .jargon")) return;
+      section.classList.add("section-focus");
+    });
   }
 
   function renderSources() {
