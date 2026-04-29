@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Stocks Investing Dossier — LRS, GIFT City & ICICI Direct</title>
+  <meta name="description" content="A clickable, audit-grade knowledge dossier on direct global stock investing from India via LRS and GIFT City, with focus on the US market and ICICI Direct pathways." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ========== TOP NAV ========== -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a href="#hero" class="brand">
+        <span class="brand-mark">G</span>
+        <span class="brand-text">Global Stocks <em>Dossier</em></span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#routes">Routes</a>
+        <a href="#lrs">LRS</a>
+        <a href="#gift">GIFT City</a>
+        <a href="#icici">ICICI Direct</a>
+        <a href="#us">US Market</a>
+        <a href="#world">World Map</a>
+        <a href="#tax">Taxation</a>
+        <a href="#risks">Risks</a>
+        <a href="#calc">Calculators</a>
+        <a href="#faq">FAQ</a>
+        <a href="#glossary">Glossary</a>
+        <a href="#sources">Sources</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </header>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Audit-grade · India → World · Updated FY 2025–26</span>
+        <h1>Direct investing in <span class="grad">Global Stocks</span> from India.</h1>
+        <p class="lede">
+          A clickable knowledge dossier on the two legitimate routes Indian residents can use to own shares of Apple, Microsoft, Google, NVIDIA, Tesla and 60,000+ other global securities — the <strong>Liberalised Remittance Scheme (LRS)</strong> and <strong>GIFT City IFSC</strong> — with a deep dive on how <strong>ICICI Direct</strong> enables both. Every limit, every tax, every charge, every edge case.
+        </p>
+        <div class="hero-cta">
+          <a href="#routes" class="btn btn-primary">Compare the two routes →</a>
+          <a href="#calc" class="btn btn-ghost">Open calculators</a>
+        </div>
+        <div class="hero-stats">
+          <div><b>USD 2,50,000</b><span>LRS limit / individual / FY</span></div>
+          <div><b>20%</b><span>TCS above ₹10L (FY25-26)</span></div>
+          <div><b>60,000+</b><span>US stocks &amp; ETFs accessible</span></div>
+          <div><b>0%</b><span>STT / LTCG inside IFSC*</span></div>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <h3>What this dossier covers</h3>
+        <ul class="check">
+          <li>LRS rules, TCS slabs, FEMA do's &amp; don'ts</li>
+          <li>GIFT City IFSC route, IFSCA regulations, eligible products</li>
+          <li>ICICI Direct Global Investment + IFSC offering, charges, account opening</li>
+          <li>US tax: W-8BEN, dividend WHT, <em>estate tax landmine</em>, capital gains</li>
+          <li>India tax: LTCG/STCG, Schedule FA, Black Money Act, DTAA credit</li>
+          <li>Other markets: UK, Singapore, HK, Japan, EU, Australia, Canada, UAE</li>
+          <li>Risks: FX, geopolitical, custodial, liquidity, regulatory</li>
+          <li>5 live calculators · interactive world map · 80+ FAQ · glossary</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="hero-scroll">▼ Scroll the dossier</div>
+  </section>
+
+  <!-- Section anchors loaded incrementally -->
+  <main id="main">
+    <!-- HOW TO USE -->
+    <section id="howto" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">00 · Reader's Guide</span><h2>How to use this dossier.</h2><p class="section-sub">Six reading paths depending on your goal &amp; time. Pick one — every section also stands alone.</p></div><div id="howto-body"></div></div></section>
+
+    <!-- ROUTES -->
+    <section id="routes" class="section"><div class="container"><div class="section-head"><span class="section-tag">01 · The Two Routes</span><h2>LRS vs GIFT City — pick your lane.</h2><p class="section-sub">There are exactly two RBI-sanctioned ways for an Indian resident to <em>directly</em> own foreign-listed shares. Everything else (mutual funds, FoFs, ULIPs with int'l exposure) is <em>indirect</em>. This dossier is about direct ownership.</p></div><div id="routes-body"></div></div></section>
+
+    <!-- LRS -->
+    <section id="lrs" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">02 · LRS Deep Dive</span><h2>The Liberalised Remittance Scheme.</h2><p class="section-sub">Your default rail for global investing — the rules, the limits, the TCS, the paperwork, the traps.</p></div><div id="lrs-body"></div></div></section>
+
+    <!-- GIFT -->
+    <section id="gift" class="section"><div class="container"><div class="section-head"><span class="section-tag">03 · GIFT City IFSC</span><h2>India's offshore in a Special Economic Zone.</h2><p class="section-sub">A deemed-foreign jurisdiction inside Gujarat that lets you invest in global stocks via Indian regulators — with material tax efficiency.</p></div><div id="gift-body"></div></div></section>
+
+    <!-- ICICI -->
+    <section id="icici" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">04 · ICICI Direct Pathways</span><h2>How ICICI Direct enables global investing.</h2><p class="section-sub">Two distinct rails: ICICI Direct Global Investment (LRS via Interactive Brokers tie-up) and ICICI Direct's IFSC entity at GIFT City. Charges, KYC, products, mechanics.</p></div><div id="icici-body"></div></div></section>
+
+    <!-- US -->
+    <section id="us" class="section"><div class="container"><div class="section-head"><span class="section-tag">05 · United States — Primary Focus</span><h2>The US Market: every nut and bolt.</h2><p class="section-sub">~60% of global market cap, the deepest pool of equities on Earth, and a tax regime with one critical landmine for non-resident aliens. Read carefully.</p></div><div id="us-body"></div></div></section>
+
+    <!-- WORLD MAP -->
+    <section id="world" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">06 · The Rest of the World</span><h2>Click any country on the map.</h2><p class="section-sub">Live, draggable map. Click pins for that country's regulations, dividend WHT, estate tax exposure, DTAA status with India, accessibility from LRS and GIFT City.</p></div><div id="world-body"></div></div></section>
+
+    <!-- TAX -->
+    <section id="tax" class="section"><div class="container"><div class="section-head"><span class="section-tag">07 · Indian Taxation &amp; Compliance</span><h2>How the Income-tax Act treats your global gains.</h2><p class="section-sub">Capital gains, dividends, FX gain/loss treatment, Schedule FA, FA-disclosure penalties, Black Money Act — everything that touches your ITR.</p></div><div id="tax-body"></div></div></section>
+
+    <!-- RISKS -->
+    <section id="risks" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">08 · Risks &amp; Edge Cases</span><h2>What can go wrong, and how to avoid it.</h2><p class="section-sub">Currency, custody, geopolitics, regulatory drift, sanctions, broker failure, Schedule-FA misses, estate-tax shocks. The honest list.</p></div><div id="risks-body"></div></div></section>
+
+    <!-- CALC -->
+    <section id="calc" class="section"><div class="container"><div class="section-head"><span class="section-tag">09 · Live Calculators</span><h2>Run your own numbers.</h2><p class="section-sub">Five calculators: LRS budget tracker, TCS estimator, capital-gains, dividend WHT &amp; DTAA credit, US estate-tax exposure.</p></div><div id="calc-body"></div></div></section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section alt"><div class="container"><div class="section-head"><span class="section-tag">10 · FAQ</span><h2>80+ questions clients actually ask.</h2><p class="section-sub">Click any question — type to filter. Every answer cites the operative rule.</p></div><div id="faq-body"></div></div></section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="section"><div class="container"><div class="section-head"><span class="section-tag">11 · Glossary</span><h2>Decode every acronym.</h2><p class="section-sub">From ADR to W-8BEN — tap any term.</p></div><div id="glossary-body"></div></div></section>
+
+    <!-- SOURCES -->
+    <section id="sources" class="section"><div class="container"><div class="section-head"><span class="section-tag">12 · Sources &amp; References</span><h2>Where every datapoint comes from.</h2><p class="section-sub">Operative regulations, treaties, IRS publications, and IFSCA frameworks underlying this dossier.</p></div><div id="sources-body"></div></div></section>
+
+    <!-- DISCLAIMER -->
+    <section id="disclaimer" class="section disclaimer-section"><div class="container"><div class="disclaimer-card"><h3>Disclaimer</h3><p>This dossier is an educational synthesis prepared for informational purposes only. It is <em>not</em> investment, tax, legal or regulatory advice. Rules cited reflect the FY 2025–26 framework as commonly understood at the time of writing; the RBI, IFSCA, SEBI, CBDT and overseas regulators amend their circulars frequently. Always confirm current limits, rates and procedural requirements with your relationship manager at ICICI Direct, your Chartered Accountant, and the operative source circulars (RBI Master Direction on LRS · IFSCA (Capital Market Intermediaries) Regulations · CBDT notifications · IRS Pub. 519 / Form W-8BEN instructions). Numbers in calculators are illustrative.</p></div></div></section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 — Global Stocks Dossier · Built for client education</div>
+      <div class="footer-links">
+        <a href="#hero">Top</a>
+        <a href="#disclaimer">Disclaimer</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal scaffold -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
